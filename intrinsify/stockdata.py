@@ -15,21 +15,21 @@ def float_to_percentage_string(num):
 def format_result_string(*args):
     return '  |  '.join(args)
 
-def get_stock_data(ticker):
-    data = Stock(ticker)
-    return data.construct_output()
+def print_stock_data(ticker):
+    data = StockData(ticker)
+    print(data)
 
 class StockData():
     def __init__(self, ticker):
         self.ticker = ticker
         self.stock = Stock(ticker, output_format='pandas')
-        self.name = stock.get_company_name()['companyName'].to_string()
-        self.price = stock.get_price()['price'][ticker]
-        self.eps = stock.get_key_stats()[ticker]['latestEPS']
+        self.name = self.stock.get_company_name()['companyName'].to_string()
+        self.price = self.stock.get_price()['price'][ticker]
+        self.eps = self.stock.get_key_stats()[ticker]['latestEPS']
         self.flat_growth_estimate = 5
         self.aaa_corporate_bond_yield = 3.56
-        self.intrinsic_value = (stock_eps * (8.5 + (2 * flat_growth_estimate)) * 4.4) / aaa_corporate_bond_yield
-        self.norm_intrinsic_value = stock_intrinsic_value / stock_price
+        self.intrinsic_value = (self.eps * (8.5 + (2 * self.flat_growth_estimate)) * 4.4) / self.aaa_corporate_bond_yield
+        self.norm_intrinsic_value = self.intrinsic_value / self.price
 
     def construct_output(self):
         return format_result_string(self.name,

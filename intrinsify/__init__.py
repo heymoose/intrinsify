@@ -1,1 +1,1 @@
-from .stockdata import StockData
+from .stockdata import print_stock_data
