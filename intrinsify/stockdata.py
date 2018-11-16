@@ -5,6 +5,7 @@ from iexfinance import get_historical_data
 from iexfinance import get_market_tops
 from iexfinance import get_stats_intraday
 from money import Money
+from tabulate import tabulate
 
 def format_num_to_currency(num):
     return Money(num, 'USD').format('en_US')
@@ -20,6 +21,15 @@ def print_stock_data(ticker):
     print(data)
 
 class StockData():
+    data_headers = ['Name',
+        'Ticker',
+        'Price',
+        'Flat Growth Estimate',
+        'AAA Corp Bond Yield',
+        'EPS',
+        'Intrinsic Value',
+        'Normalized IV']
+
     def __init__(self, ticker):
         self.ticker = ticker
         self.stock = Stock(ticker, output_format='pandas')
@@ -31,15 +41,15 @@ class StockData():
         self.intrinsic_value = (self.eps * (8.5 + (2 * self.flat_growth_estimate)) * 4.4) / self.aaa_corporate_bond_yield
         self.norm_intrinsic_value = self.intrinsic_value / self.price
 
-    def construct_output(self):
-        return format_result_string(self.name,
-            self.ticker.upper(),
-            format_num_to_currency(self.price),
-            float_to_percentage_string(self.flat_growth_estimate),
-            float_to_percentage_string(self.aaa_corporate_bond_yield),
-            format_num_to_currency(self.eps),
-            format_num_to_currency(self.intrinsic_value),
-            '{:.2f}'.format(self.norm_intrinsic_value))
+    def construct_tabular_output(self):
+        return [[self.name,
+                 self.ticker.upper(),
+                 format_num_to_currency(self.price),
+                 float_to_percentage_string(self.flat_growth_estimate),
+                 float_to_percentage_string(self.aaa_corporate_bond_yield),
+                 format_num_to_currency(self.eps),
+                 format_num_to_currency(self.intrinsic_value),
+                 '{:.2f}'.format(self.norm_intrinsic_value)]]
 
     def __str__(self):
-        return self.construct_output()
+        return tabulate(self.construct_tabular_output(), self.data_headers)
