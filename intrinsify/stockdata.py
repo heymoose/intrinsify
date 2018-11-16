@@ -61,4 +61,5 @@ class StockData():
     def __str__(self):
         return tabulate(self.construct_tabular_output(), self.data_headers)
 
-
+if __name__ == '__main__':
+    intrinsify()
