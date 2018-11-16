@@ -22,8 +22,9 @@ def print_stock_data(ticker):
     print(data)
 
 @click.command()
-def cli():
-    click.echo('Hello world')
+def intrinsify():
+    data = StockData('KO')
+    print(data)
 
 class StockData():
     data_headers = ['Name',

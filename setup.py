@@ -14,6 +14,6 @@ setup(name='intrinsify',
       ],
       entry_points='''
           [console_scripts]
-          stockdata=intrinsify.stockdata:cli
+          intrinsify=intrinsify.stockdata:intrinsify
       ''',
       zip_safe=False)
