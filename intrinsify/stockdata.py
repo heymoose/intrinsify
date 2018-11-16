@@ -1,5 +1,6 @@
-import sys
+import sys                      
 import pandas as pd
+import click
 from iexfinance import Stock
 from iexfinance import get_historical_data
 from iexfinance import get_market_tops
@@ -20,6 +21,10 @@ def print_stock_data(ticker):
     data = StockData(ticker)
     print(data)
 
+@click.command()
+def cli():
+    click.echo('Hello world')
+
 class StockData():
     data_headers = ['Name',
         'Ticker',
@@ -38,7 +43,8 @@ class StockData():
         self.eps = self.stock.get_key_stats()[ticker]['latestEPS']
         self.flat_growth_estimate = 5
         self.aaa_corporate_bond_yield = 3.56
-        self.intrinsic_value = (self.eps * (8.5 + (2 * self.flat_growth_estimate)) * 4.4) / self.aaa_corporate_bond_yield
+        self.intrinsic_value = (self.eps * (8.5 + (2 * self.flat_growth_estimate)) * 4.4) \
+            / self.aaa_corporate_bond_yield
         self.norm_intrinsic_value = self.intrinsic_value / self.price
 
     def construct_tabular_output(self):
@@ -53,3 +59,5 @@ class StockData():
 
     def __str__(self):
         return tabulate(self.construct_tabular_output(), self.data_headers)
+
+

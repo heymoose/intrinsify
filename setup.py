@@ -1,10 +1,19 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(name='intrinsify',
       version='0.1',
-      description='Python package that pulls stock information and calculates a rough intrinsic value based on the Ben Graham formula',
+      description="""Python package that pulls stock information and calculates a 
+                     rough intrinsic value based on the Ben Graham formula""",
       url='https://github.com/heymoose/intrinsify',
       author='Marc Novak',
       license='MIT',
-      packages=[''],
+      packages=find_packages(),
+      include_package_data=True,
+      install_requires=[
+          'Click',
+      ],
+      entry_points='''
+          [console_scripts]
+          stockdata=intrinsify.stockdata:cli
+      ''',
       zip_safe=False)
