@@ -1,1 +1,1 @@
-from .stockdata import print_stock_data
+from .intrinsify import print_stock_data
