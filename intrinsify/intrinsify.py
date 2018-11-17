@@ -1,3 +1,7 @@
+###########################
+# NEED TO CHANGE THE NORM INTRINSIC VALUE ON STOCK DATA TO BE ABSOLUTE VALUE
+###########################
+
 import sys                      
 import pandas as pd
 import click
@@ -8,22 +12,25 @@ from iexfinance import get_market_tops
 from iexfinance import get_stats_intraday
 from tabulate import tabulate
 
+data_headers = [
+    'Name',
+    'Ticker',
+    'Price',
+    'Flat Growth Estimate',
+    'AAA Corp Bond Yield',
+    'EPS',
+    'Intrinsic Value',
+    'Normalized IV'
+]
 
 @click.command()
-def intrinsify():
-    data = StockData('KO')
-    print(data)
+@click.argument('tickers', nargs=-1)
+def intrinsify(tickers):
+    stocks = [StockData(ticker) for ticker in tickers]
+    stocks_tabular = [stock.construct_tabular_output() for stock in stocks]
+    print(tabulate(stocks_tabular, data_headers))
 
 class StockData():
-    data_headers = ['Name',
-        'Ticker',
-        'Price',
-        'Flat Growth Estimate',
-        'AAA Corp Bond Yield',
-        'EPS',
-        'Intrinsic Value',
-        'Normalized IV']
-
     def __init__(self, ticker):
         self.ticker = ticker
         self.stock = Stock(ticker, output_format='pandas')
@@ -37,7 +44,7 @@ class StockData():
         self.norm_intrinsic_value = self.intrinsic_value / self.price
 
     def construct_tabular_output(self):
-        return [[
+        return [
             self.name,
             self.ticker.upper(),
             formatters.num_to_currency(self.price),
@@ -46,10 +53,10 @@ class StockData():
             formatters.num_to_currency(self.eps),
             formatters.num_to_currency(self.intrinsic_value),
             formatters.pretty_float(self.norm_intrinsic_value)
-        ]]
+        ]
 
     def __str__(self):
-        return tabulate(self.construct_tabular_output(), self.data_headers)
+        return tabulate([self.construct_tabular_output()], data_headers)
 
 if __name__ == '__main__':
     intrinsify()
