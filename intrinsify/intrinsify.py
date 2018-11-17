@@ -8,9 +8,6 @@ from iexfinance import get_market_tops
 from iexfinance import get_stats_intraday
 from tabulate import tabulate
 
-def print_stock_data(ticker):
-    data = StockData(ticker)
-    print(data)
 
 @click.command()
 def intrinsify():
