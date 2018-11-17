@@ -24,11 +24,25 @@ data_headers = [
 ]
 
 @click.command()
-@click.argument('tickers', nargs=-1)
-def intrinsify(tickers):
+# @click.argument('tickers', nargs=-1)
+@click.argument('input', type=click.File('rb'), nargs=-1)
+def intrinsify(input):
+    tickers = parse_file_input(input)
     stocks = [StockData(ticker) for ticker in tickers]
     stocks_tabular = [stock.construct_tabular_output() for stock in stocks]
-    print(tabulate(stocks_tabular, data_headers))
+    click.echo(tabulate(stocks_tabular, data_headers))
+    
+    
+def parse_file_input(input):
+    tickers = []
+    for f in input:
+        while True:
+            chunk = f.read(1024)
+            if not chunk:
+                break
+            tickers += chunk.decode('utf-8').strip().replace(' ', '').split(',')
+
+    return tickers
 
 class StockData():
     def __init__(self, ticker):
