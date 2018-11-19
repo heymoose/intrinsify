@@ -1,7 +1,3 @@
-###########################
-# NEED TO CHANGE THE NORM INTRINSIC VALUE ON STOCK DATA TO BE ABSOLUTE VALUE
-###########################
-
 import sys                      
 import pandas as pd
 import click
@@ -27,11 +23,14 @@ data_headers = [
 # @click.argument('tickers', nargs=-1)
 @click.argument('input', type=click.File('rb'), nargs=-1)
 def intrinsify(input):
+    click.echo("Parsing input file...")
     tickers = parse_file_input(input)
+
+    click.echo("Fetching stock data...")
     stocks = [StockData(ticker) for ticker in tickers]
+
     stocks_tabular = [stock.construct_tabular_output() for stock in stocks]
-    click.echo(tabulate(stocks_tabular, data_headers))
-    
+    click.echo(tabulate(stocks_tabular, data_headers, tablefmt='psql'))
     
 def parse_file_input(input):
     tickers = []
@@ -48,6 +47,7 @@ class StockData():
     def __init__(self, ticker):
         self.ticker = ticker
         self.stock = Stock(ticker, output_format='pandas')
+        self.sector = self.stock.get_sector()['sector'][ticker]
         self.name = self.stock.get_company_name()['companyName'].to_string()
         self.price = self.stock.get_price()['price'][ticker]
         self.eps = self.stock.get_key_stats()[ticker]['latestEPS']
