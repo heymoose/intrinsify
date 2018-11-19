@@ -9,6 +9,7 @@ from iexfinance import get_stats_intraday
 from tabulate import tabulate
 
 data_headers = [
+    'Y/N',
     'Name',
     'Ticker',
     'Price',
@@ -56,9 +57,11 @@ class StockData():
         self.intrinsic_value = (self.eps * (8.5 + (2 * self.flat_growth_estimate)) * 4.4) \
             / self.aaa_corporate_bond_yield
         self.norm_intrinsic_value = self.intrinsic_value / self.price
+        self.attractive = u'\u2713' if self.norm_intrinsic_value > 1 else ' '
 
     def construct_tabular_output(self):
         return [
+            self.attractive,
             self.name,
             self.ticker.upper(),
             formatters.num_to_currency(self.price),
@@ -68,6 +71,18 @@ class StockData():
             formatters.num_to_currency(self.intrinsic_value),
             formatters.pretty_float(self.norm_intrinsic_value)
         ]
+
+    def to_dict(self):
+        return {
+            'Name': self.name,
+            'Ticker': self.ticker.upper(),
+            'Price': formatters.num_to_currency(self.price),
+            'Flat Growth Estimate': formatters.float_to_percentage_string(self.flat_growth_estimate),
+            'AAA Corp Bond Yield': formatters.float_to_percentage_string(self.aaa_corporate_bond_yield),
+            'EPS': formatters.num_to_currency(self.eps),
+            'Intrinsic Value': formatters.num_to_currency(self.intrinsic_value),
+            'Normalized IV': formatters.pretty_float(self.norm_intrinsic_value)
+        }
 
     def __str__(self):
         return tabulate([self.construct_tabular_output()], data_headers)
