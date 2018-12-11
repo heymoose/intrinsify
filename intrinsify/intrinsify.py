@@ -1,7 +1,7 @@
-import sys                      
+import sys
 import pandas as pd
 import click
-import formatters
+from money import Money
 from iexfinance import Stock
 from iexfinance import get_historical_data
 from iexfinance import get_market_tops
@@ -32,7 +32,7 @@ def intrinsify(input):
 
     stocks_tabular = [stock.construct_tabular_output() for stock in stocks]
     click.echo(tabulate(stocks_tabular, data_headers, tablefmt='psql'))
-    
+
 def parse_file_input(input):
     tickers = []
     for f in input:
@@ -64,28 +64,37 @@ class StockData():
             self.attractive,
             self.name,
             self.ticker.upper(),
-            formatters.num_to_currency(self.price),
-            formatters.float_to_percentage_string(self.flat_growth_estimate),
-            formatters.float_to_percentage_string(self.aaa_corporate_bond_yield),
-            formatters.num_to_currency(self.eps),
-            formatters.num_to_currency(self.intrinsic_value),
-            formatters.pretty_float(self.norm_intrinsic_value)
+            num_to_currency(self.price),
+            float_to_percentage_string(self.flat_growth_estimate),
+            float_to_percentage_string(self.aaa_corporate_bond_yield),
+            num_to_currency(self.eps),
+            num_to_currency(self.intrinsic_value),
+            pretty_float(self.norm_intrinsic_value)
         ]
 
     def to_dict(self):
         return {
             'Name': self.name,
             'Ticker': self.ticker.upper(),
-            'Price': formatters.num_to_currency(self.price),
-            'Flat Growth Estimate': formatters.float_to_percentage_string(self.flat_growth_estimate),
-            'AAA Corp Bond Yield': formatters.float_to_percentage_string(self.aaa_corporate_bond_yield),
-            'EPS': formatters.num_to_currency(self.eps),
-            'Intrinsic Value': formatters.num_to_currency(self.intrinsic_value),
-            'Normalized IV': formatters.pretty_float(self.norm_intrinsic_value)
+            'Price': num_to_currency(self.price),
+            'Flat Growth Estimate': float_to_percentage_string(self.flat_growth_estimate),
+            'AAA Corp Bond Yield': float_to_percentage_string(self.aaa_corporate_bond_yield),
+            'EPS': num_to_currency(self.eps),
+            'Intrinsic Value': num_to_currency(self.intrinsic_value),
+            'Normalized IV': pretty_float(self.norm_intrinsic_value)
         }
 
     def __str__(self):
         return tabulate([self.construct_tabular_output()], data_headers)
+
+def num_to_currency(num):
+    return Money(num, 'USD').format('en_US')
+
+def float_to_percentage_string(num):
+    return '{:.2f}%'.format(float(num))
+
+def pretty_float(num):
+    return "%.2f" % num
 
 if __name__ == '__main__':
     intrinsify()
